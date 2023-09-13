@@ -2,7 +2,8 @@ import { useEffect } from "react";
 import { useState } from "react";
 import Bottle from "../Bottle/Bottle";
 import './Bottles.css'
-import { adToLocalstorage, getStoredCart } from "../../Uitilities/loalStorage";
+import { adToLocalstorage, getStoredCart, removeCartFromLocalStorage } from "../../Uitilities/loalStorage";
+import Cart from "../Caart/Cart";
 
 const Bottles = () => {
     const [bottles,setBottles]=useState([]);
@@ -17,6 +18,14 @@ const Bottles = () => {
         if(bottles.length){
             const storedCart=getStoredCart();
             console.log(storedCart,bottles);
+            const saveCart=[];
+            for(const id of storedCart){
+                console.log(id);
+                const bottle=bottles.find(bottle=>bottle.id===id)
+                saveCart.push(bottle);
+            }
+            console.log('save carat',saveCart);
+            setCart(saveCart);
         }
     },[bottles])
     // console.log(bottles);
@@ -26,10 +35,20 @@ const Bottles = () => {
         console.log(bottle);
         adToLocalstorage(bottle.id);
     }
+    const handleRemoveFromCart=id=>{
+        // visual cart remove
+        const remainingCart=cart.filter(bottle=>bottle.id !==id);
+        setCart(remainingCart);
+        // local storage remove
+        removeCartFromLocalStorage(id);
+
+    }
     return (
         <div>
             <h2>Bottles are avialable :{bottles.length} </h2>
-            <h3>Cart : {cart.length}</h3>
+            <Cart cart={cart} key={cart.id} 
+            handleRemoveFromCart={handleRemoveFromCart}></Cart>
+
             
             <div className="bottle-container">
                 {
